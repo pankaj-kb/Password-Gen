@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 function App() {
   const [length, setLength] = useState(6);
@@ -26,7 +26,16 @@ function App() {
     setPassword(pass);
   }, [length, numAllowed, charAllowed, setPassword]);
 
-  useEffect(passwordGenerator, [numAllowed, charAllowed, setPassword, length]);
+  useEffect(() => {
+    passwordGenerator();
+  }, [numAllowed, charAllowed, setPassword, length]);
+
+  const passwordRef = useRef(null);
+
+  const copyPasswordToClipBoard = useCallback(() => {
+    window.navigator.clipboard.writeText(password);
+    passwordRef.current?.select();
+  }, [password]);
 
   return (
     <>
@@ -41,8 +50,12 @@ function App() {
             className="outline-none w-full py-1 px-3"
             placeholder="password"
             readOnly
+            ref={passwordRef}
           />
-          <button className="outline-none bg-blue-500 text-orange-400 px-3 py-0.5 shrink-0">
+          <button
+            className="outline-none bg-blue-500 text-orange-400 px-3 py-0.5 shrink-0"
+            onClick={copyPasswordToClipBoard}
+          >
             Copy
           </button>
         </div>
